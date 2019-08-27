@@ -1,0 +1,6 @@
+/data
+/data_sample
+/log
+/ckpt
+__pycache__
+.vector_cache
