@@ -26,7 +26,7 @@ python cli.py train
 Access the prompted tensorboard port to view basic statistics.
 
 For further configurations, take a look at `startup/config.py` and
-[fire][https://github.com/google/python-fire].
+[fire](https://github.com/google/python-fire).
 
 ## Data Folder Structure
 
@@ -44,12 +44,15 @@ For further configurations, take a look at `startup/config.py` and
 The data folder should be structured as follows:
 
 > ./data
+
 > ./data/QA_train_set_s1s2.json
+
 > ./data/images/s0101/...
 
 The preprocessing command should be the following:
 
 > python json_to_jsonl.py
+
 > python cli.py check_dataloader
 
 ## Troubleshooting
