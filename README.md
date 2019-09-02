@@ -25,6 +25,9 @@ python cli.py train
 
 Access the prompted tensorboard port to view basic statistics.
 
+For further configurations, take a look at `startup/config.py` and
+[fire][https://github.com/google/python-fire].
+
 ## Data Folder Structure
 
 - question for shots only
