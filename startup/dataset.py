@@ -9,8 +9,9 @@ from utils import pad_tensor
 from preprocess_image import preprocess_images, get_empty_image_vector
 
 
-def load_text_data(args, tokenizer):
+def load_text_data(args, tokenizer, vocab=None):
     vid = InfoField()
+    qid = InfoField()
     videoType = InfoField()
     q_level_mem = InfoField()
     q_level_logic = InfoField()
@@ -29,6 +30,7 @@ def load_text_data(args, tokenizer):
         path=args.data_path, format='json',
         fields={
             'vid': ('vid', vid),
+            'qid': ('qid', qid),
             'videoType': ('videoType', videoType),
             'q_level_mem': ('q_level_mem', q_level_mem),
             'q_level_logic': ('q_level_logic', q_level_logic),
@@ -49,18 +51,20 @@ def load_text_data(args, tokenizer):
         sort_within_batch=True,
     )
 
-    vocab_args = {}
-    k = 'vocab_pretrained'
-    if hasattr(args, k):
-        vocab_args['vectors'] = getattr(args, k)
-    que.build_vocab(train.que, train.true_ans,
-                    train.false_ans, train.single_false_ans,
-                    **vocab_args)
-    que.vocab = process_vocab(que.vocab)
-    vocab = que.vocab
+    if vocab is None:
+        vocab_args = {}
+        k = 'vocab_pretrained'
+        if hasattr(args, k):
+            vocab_args['vectors'] = getattr(args, k)
+        que.build_vocab(train.que, train.true_ans,
+                        train.false_ans, train.single_false_ans,
+                        **vocab_args)
+        que.vocab = process_vocab(que.vocab)
+        vocab = que.vocab
     true_ans.vocab = vocab
     false_ans.vocab = vocab
     single_false_ans.vocab = vocab
+    que.vocab = vocab
 
     return {'train': train_iter, 'val': val_iter, 'test': test_iter}, vocab
 
@@ -95,10 +99,14 @@ class ImageIterator:
 
     def __iter__(self):
         for batch in self.it:
-            batch.images = [torch.from_numpy(self.image_dt[vid]).to(self.device).split(1) for vid in batch.vid]
-            batch.images = pad_tensor(batch.images).squeeze(2)
-
+            batch.images = self.get_image(batch.vid)
             yield batch
+
+    def get_image(self, vids):
+        images = [torch.from_numpy(self.image_dt[vid]).to(self.device).split(1) for vid in vids]
+        images = pad_tensor(images).squeeze(2)
+
+        return images
 
     def load_images(self, image_path, dataset, cache=True, device=-1):
         images = preprocess_images(self.args, image_path, cache=cache, device=device, num_workers=self.num_workers)
@@ -117,10 +125,10 @@ def get_image_iterator(args, text_it):
 
 
 # batch: [len, batch_size]
-def get_iterator(args):
+def get_iterator(args, vocab=None):
     print("Loading Text Data")
     tokenizer = get_tokenizer(args)
-    iters, vocab = load_text_data(args, tokenizer)
+    iters, vocab = load_text_data(args, tokenizer, vocab)
     print("Loading Image Data")
     image_iters = {}
     for key, it in iters.items():

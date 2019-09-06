@@ -1,4 +1,8 @@
+from contextlib import contextmanager
 from datetime import datetime
+
+import os
+import sys
 
 import six
 import numpy as np
@@ -124,3 +128,15 @@ def pad_tensor(x, val=0):
     add_data([], x)
 
     return storage
+
+
+@contextmanager
+def suppress_stdout(do=True):
+    if do:
+        with open(os.devnull, "w") as devnull:
+            old_stdout = sys.stdout
+            sys.stdout = devnull
+            try:
+                yield
+            finally:
+                sys.stdout = old_stdout

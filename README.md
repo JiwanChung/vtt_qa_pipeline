@@ -18,15 +18,47 @@ python -m nltk.downloader 'punkt'
 
 ## How to Use
 
+### training
+
 ```bash
 cd startup
 python cli.py train
 ```
 
 Access the prompted tensorboard port to view basic statistics.
+At the end of every epoch, a checkpoint file will be saved on `/data/ckpt/OPTION_NAMES`
 
 For further configurations, take a look at `startup/config.py` and
 [fire](https://github.com/google/python-fire).
+
+### evaluation
+
+```bash
+cd startup
+python cli.py evaluate --ckpt_name=$CKPT_NAME
+```
+
+Substitute CKPT_NAME to your prefered checkpoint file.
+e\.g\. `--ckpt_name=='feature*/loss_1.34'`
+
+### inference
+
+```bash
+cd startup
+python cli.py infer --ckpt_name=$CKPT_NAME --quesion=$QUESTION --vid=$VID
+```
+
+The last command will output the machine answer in natural language format.
+
+e\.g\.
+```bash
+>>> python cli.py infer --ckpt_name=$CKPT_NAME --quesion=$QUESTION --vid=$VID
+>>> monica places a stack of dishes on the table.
+```
+
+Currently we only support fixed choice model.
+Hence all questions will be substituted with the closest question in dataset,
+and the output is chosen based on index emitted by the model.
 
 ## Data Folder Structure
 
