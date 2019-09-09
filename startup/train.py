@@ -1,7 +1,6 @@
 from ignite.engine.engine import Engine, State, Events
 
-from dataset import get_iterator
-from model import get_model
+from ckpt import get_model_ckpt, save_ckpt
 from loss import get_loss
 from optimizer import get_optimizer
 from logger import get_logger, log_results
@@ -40,9 +39,10 @@ def get_trainer(args, model, loss_fn, optimizer):
 
 
 def train(args):
-    iters, vocab = get_iterator(args)
+    args, model, iters, vocab, ckpt_available = get_model_ckpt(args)
 
-    model = get_model(args, vocab)
+    if ckpt_available:
+        print(f"loaded checkpoint {args.ckpt_name}")
     loss_fn = get_loss(args, vocab)
     optimizer = get_optimizer(args, model)
 
@@ -64,5 +64,6 @@ def train(args):
         log_results(logger, 'train/epoch', engine.state, engine.state.epoch)
         state = evaluate_once(evaluator, iterator=iters['val'])
         log_results(logger, 'valid/epoch', state, engine.state.epoch)
+        save_ckpt(args, engine.state.epoch, engine.state.metrics['loss'], model, vocab)
 
     trainer.run(iters['train'], max_epochs=args.max_epochs)

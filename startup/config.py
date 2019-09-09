@@ -13,7 +13,7 @@ config = {
     'max_epochs': 20,
     'allow_empty_images': False,
     'num_workers': 40,
-    'model_name': 'baseline',
+    'model_name': 'acc_model',
     'image_dim': 512,  # hardcoded for ResNet50
     'n_dim': 256,
     'layers': 3,
@@ -24,6 +24,8 @@ config = {
     # 'metrics': ['bleu', 'rouge'],
     'metrics': [],
     'log_cmd': False,
+    'ckpt_path': '../data/ckpt',
+    'ckpt_name': None
 }
 
 

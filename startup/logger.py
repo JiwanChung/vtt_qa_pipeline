@@ -59,9 +59,18 @@ def log_results(logger, name, state, step):
     for key, val in state.metrics.items():
         if isinstance(val, dict):
             for key2, v in val.items():
-                logger(f"{name}/{key}/{key2}" , v, step)
+                logger(f"{name}/{key}/{key2}", v, step)
         else:
-            logger(f"{name}/{key}" , val, step)
+            logger(f"{name}/{key}", val, step)
+
+
+def log_results_cmd(name, state, step):
+    for key, val in state.metrics.items():
+        if isinstance(val, dict):
+            for key2, v in val.items():
+                print(f"{name}/{key}/{key2}:", v, f"step:{step}")
+        else:
+            print(f"{name}/{key}:", val, f"step:{step}")
 
 
 def get_logger(args):

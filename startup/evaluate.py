@@ -2,7 +2,14 @@ import torch
 from ignite.engine.engine import Engine, State, Events
 from metric.stat_metric import StatMetric
 
+from dataset import get_iterator
+from ckpt import get_model_ckpt
+from model import get_model
+from loss import get_loss
+from logger import log_results_cmd
+
 from utils import prepare_batch
+from metric import get_metrics
 
 
 def get_evaluator(args, model, loss_fn, metrics={}):
@@ -36,4 +43,13 @@ def evaluate_once(evaluator, iterator):
 
 
 def evaluate(args):
-    pass
+    args, model, iters, vocab, ckpt_available = get_model_ckpt(args)
+    if ckpt_available:
+        print(f"loaded checkpoint {args.ckpt_name}")
+    loss_fn = get_loss(args, vocab)
+
+    metrics = get_metrics(args, vocab)
+    evaluator = get_evaluator(args, model, loss_fn, metrics)
+
+    state = evaluate_once(evaluator, iterator=iters['val'])
+    log_results_cmd('valid/epoch', state, 0)
