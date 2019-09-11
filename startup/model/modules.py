@@ -33,7 +33,7 @@ class Conv(nn.Module):
 
         assert d in [1, 2, 3]
         self.d = d
-        self.conv = getattr(nn, f"Conv{self.d}d")(*args, **kwargs)
+        self.conv = getattr(nn, "Conv{}d".format(self.d))(*args, **kwargs)
 
     def forward(self, x):
         x = torch.einsum('b...c->bc...', x)
@@ -58,10 +58,8 @@ class MultiHeadAttention(nn.Module):
         heads = 1 if k_dim < heads else heads
         heads = 1 if v_dim < heads else heads
 
-        assert q_dim % heads == 0, f"q_dim: {q_dim} / n_heads: {heads} must be divisible"
-        assert k_dim % heads == 0, f"k_dim: {k_dim} / n_heads: {heads} must be divisible"
-        assert v_dim % heads == 0, f"v_dim: {v_dim} / n_heads: {heads} must be divisible"
-        assert m_dim % heads == 0, f"m_dim: {m_dim} / n_heads: {heads} must be divisible"
+        for name, dim in zip(['q_dim', 'k_dim', 'v_dim', 'm_dim'], [q_dim, k_dim, v_dim, m_dim]):
+            assert dim % heads == 0, "{}: {} / n_heads: {} must be divisible".format(name, dim, heads)
 
         self.q = nn.Linear(q_dim // heads, m_dim // heads)
         self.k = nn.Linear(k_dim // heads, m_dim // heads)

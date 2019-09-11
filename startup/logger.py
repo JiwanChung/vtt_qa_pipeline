@@ -13,18 +13,19 @@ class Logger:
     def __init__(self, args):
         self.log_cmd = args.log_cmd
         log_name = get_dirname_from_args(args)
-        log_name += f'_{get_now()}'
+        log_name += '_{}'.format(get_now())
         self.log_path = args.log_path / log_name
-        os.makedirs(self.log_path, exist_ok=True)
+        # os.makedirs(self.log_path, exist_ok=True)
+        self.log_path.mkdir(exist_ok=True)
         self.tfboard = SummaryWriter(self.log_path)
 
         self.url = run_tensorboard(self.log_path)
-        print(f"Running Tensorboard at {self.url}")
+        print("Running Tensorboard at {}".format(self.url))
 
     def __call__(self, name, val, n_iter):
         self.tfboard.add_scalar(name, val, n_iter)
         if self.log_cmd:
-            tqdm.write(f'{n_iter}:({name},{val})')
+            tqdm.write('{}:({},{})'.format(n_iter, name, val))
 
 
 def run_tensorboard(log_path):
@@ -59,18 +60,18 @@ def log_results(logger, name, state, step):
     for key, val in state.metrics.items():
         if isinstance(val, dict):
             for key2, v in val.items():
-                logger(f"{name}/{key}/{key2}", v, step)
+                logger("{}/{}/{}".format(name, key, key2), v, step)
         else:
-            logger(f"{name}/{key}", val, step)
+            logger("{}/{}".format(name, key), val, step)
 
 
 def log_results_cmd(name, state, step):
     for key, val in state.metrics.items():
         if isinstance(val, dict):
             for key2, v in val.items():
-                print(f"{name}/{key}/{key2}:", v, f"step:{step}")
+                print("{}/{}/{}".format(name, key, key2), v, "step:{}".format(step))
         else:
-            print(f"{name}/{key}:", val, f"step:{step}")
+            print("{}/{}".format(name, key), val, "step:{}".format(step))
 
 
 def get_logger(args):

@@ -16,7 +16,7 @@ def add_models():
         name = p.stem
         parent = p.parent.stem
         if name != "__init__":
-            __import__(f"{parent}.{name}")
+            __import__("{}.{}".format(parent, name))
             module = eval(name)
             for member in dir(module):
                 # Add to dict all nn.Module classes

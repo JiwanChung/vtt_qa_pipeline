@@ -9,7 +9,7 @@ def main(path, name):
 
     with open(path / (name + '.jsonl'), 'w') as f:
         for line in li:
-            f.write(f"{json.dumps(line)}\n")
+            f.write("{}\n".format(json.dumps(line)))
 
     print("done")
 

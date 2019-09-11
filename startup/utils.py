@@ -92,11 +92,11 @@ def to_string(vocab, x):
 def wait_for_key(key="y"):
     text = ""
     while (text != key):
-        text = six.moves.input(f"Press {key} to quit")
+        text = six.moves.input("Press {} to quit".format(key))
         if text == key:
             print("terminating process")
         else:
-            print(f"key {key} unrecognizable")
+            print("key {} unrecognizable".format(key))
 
 
 def get_max_size(t):

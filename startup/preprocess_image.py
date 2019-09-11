@@ -18,15 +18,15 @@ image_size = [224, 224]
 
 def preprocess_images(args, image_path, cache=True, to_features=True, device=-1, num_workers=40):
     cache_path = image_path / 'cache' / 'image.pickle'
-    if not os.path.isdir(image_path / 'cache'):
-        os.makedirs(image_path / 'cache')
+    if not (image_path / 'cache').is_dir():
+        (image_path / 'cache').mkdir()
 
     if not to_features:
         return load_images(image_path, num_workers=num_workers)
     else:
-        if os.path.isfile(cache_path):
+        if (cache_path).is_file():
             print("Loading Image Cache")
-            with open(cache_path, 'rb') as f:
+            with open(str(cache_path.resolve()), 'rb') as f:
                 image_vectors = pickle.load(f)
         else:
             print("Loading Image Files")
@@ -85,7 +85,7 @@ class ObjectDataset(VisionDataset):
 def extract_features(args, images, device=-1, num_workers=1):
     delimiter = '/'
     # flatten images
-    images = {f"{vid}{delimiter}{name}": image for vid, shots in images.items() for name, image in shots.items()}
+    images = {"{}{}{}".format(vid, delimiter, name): image for vid, shots in images.items() for name, image in shots.items()}
 
     dataset = ObjectDataset(images, transform=transforms.Compose([
         transforms.ToTensor(),

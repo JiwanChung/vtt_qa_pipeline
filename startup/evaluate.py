@@ -45,7 +45,7 @@ def evaluate_once(evaluator, iterator):
 def evaluate(args):
     args, model, iters, vocab, ckpt_available = get_model_ckpt(args)
     if ckpt_available:
-        print(f"loaded checkpoint {args.ckpt_name}")
+        print("loaded checkpoint {}".format(args.ckpt_name))
     loss_fn = get_loss(args, vocab)
 
     metrics = get_metrics(args, vocab)

@@ -27,7 +27,7 @@ def load_text_data(args, tokenizer, vocab=None):
     false_ans = data.NestedField(single_false_ans)
 
     text_data = data.TabularDataset(
-        path=args.data_path, format='json',
+        path=str(args.data_path), format='json',
         fields={
             'vid': ('vid', vid),
             'qid': ('qid', qid),
@@ -95,7 +95,7 @@ class ImageIterator:
 
         self.image_dt = self.load_images(args.image_path, text_it.dataset,
                                          cache=args.cache_image_vectors, device=args.device)
-        print(f"total vids: {len(list(self.image_dt))}")
+        print("total vids: {}".format(len(list(self.image_dt))))
 
     def __iter__(self):
         for batch in self.it:

@@ -16,13 +16,13 @@ def get_ckpt_path(args, epoch, loss):
     ckpt_path.mkdir(exist_ok=True)
     loss = '{:.4f}'.format(loss)
     ckpt_path = ckpt_path / \
-        f'loss_{loss}_epoch_{epoch}.pickle'
+        'loss_{}_epoch_{}.pickle'.format(loss, epoch)
 
     return ckpt_path
 
 
 def save_ckpt(args, epoch, loss, model, vocab):
-    print(f'saving epoch {epoch}')
+    print('saving epoch {}'.format(epoch))
     dt = {
         'args': args,
         'epoch': epoch,
@@ -32,19 +32,20 @@ def save_ckpt(args, epoch, loss, model, vocab):
     }
 
     ckpt_path = get_ckpt_path(args, epoch, loss)
-    print(f"Saving checkpoint {ckpt_path}")
-    torch.save(dt, ckpt_path)
+    print("Saving checkpoint {}".format(ckpt_path))
+    torch.save(dt, str(ckpt_path))
 
 
 def get_model_ckpt(args):
     ckpt_available = args.ckpt_name is not None
+    vocab = None
     if ckpt_available:
-        name = f'{args.ckpt_name}'
-        name = f'{name}*' if not name.endswith('*') else name
-        ckpt_paths = sorted(args.ckpt_path.glob(f'{name}'), reverse=False)
-        assert len(ckpt_paths) > 0, f"no ckpt candidate for {args.ckpt_path / args.ckpt_name}"
+        name = '{}'.format(args.ckpt_name)
+        name = '{}*'.format(name) if not name.endswith('*') else name
+        ckpt_paths = sorted(args.ckpt_path.glob(name), reverse=False)
+        assert len(ckpt_paths) > 0, "no ckpt candidate for {}".format(args.ckpt_path / args.ckpt_name)
         ckpt_path = ckpt_paths[0]  # monkey patch for choosing the best ckpt
-        print(f"loading from {ckpt_path}")
+        print("loading from {}".format(ckpt_path))
         dt = torch.load(ckpt_path)
         args.update(dt['args'])
         vocab = dt['vocab']
