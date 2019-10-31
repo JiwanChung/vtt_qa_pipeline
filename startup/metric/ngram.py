@@ -44,8 +44,8 @@ class Ngram(Metric):
     def update(self, output):
         y_pred, y = output
         num_ex = y_pred.shape[0]
-        gts = self.format_string(y_pred)
-        res = self.format_string(y)
+        res = self.format_string(y_pred)
+        gts = self.format_string(y)
 
         for scorer, method in self.scorers:
             score, scores = scorer.compute_score(gts, res)
